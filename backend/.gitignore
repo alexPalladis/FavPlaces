@@ -1,0 +1,5 @@
+# dependencies
+/node_modules
+
+#nodemon credentials
+nodemon.json
