@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import {
   BrowserRouter as Router,
   Route,
@@ -14,10 +14,15 @@ import Auth from './user/pages/Auth';
 import MainNavigation from './shared/components/Navigation/MainNavigation';
 import { AuthContext } from './shared/context/auth-context';
 import { useAuth } from './shared/hooks/auth-hook';
+import loadGoogleMapsScript from "./GoogleMapsLoader";
 
 
 const App = () => {
   const {login,logout,token,userId} = useAuth();
+
+  useEffect(() => {
+    loadGoogleMapsScript();
+  }, []);
 
   let routes;
 

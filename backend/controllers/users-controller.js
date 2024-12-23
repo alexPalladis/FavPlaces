@@ -33,7 +33,7 @@ const signup = async (req, res, next) => {
     existingUser = await User.findOne({ email: email })
   } catch (err) {
     const error = new HttpError(
-      'Signing up failed, please try again later.',
+      'Signing up failed, please try again later.1',
       500
     );
     return next(error);
@@ -54,6 +54,10 @@ const signup = async (req, res, next) => {
     const error = new HttpError('Could not create user',500);
     return next(error);
   }
+
+  if (!req.file) {
+    throw new HttpError('No image uploaded.', 422);
+}
   
   const createdUser = new User({
     name,
@@ -67,7 +71,7 @@ const signup = async (req, res, next) => {
     await createdUser.save();
   } catch (err) {
     const error = new HttpError(
-      'Signing up failed, please try again.',
+      'Signing up failed, please try again.User not created',
       500
     );
     return next(error);
@@ -75,14 +79,15 @@ const signup = async (req, res, next) => {
 
   let token;
   try{
-    token = jwt.sign({userId: createdUser.id, email: createdUser.email}, process.env.JWT_kEY,{expiresIn:'1h'});
+    token = jwt.sign({userId: createdUser.id, email: createdUser.email}, process.env.JWT_KEY,{expiresIn:'1h'});
   }catch(err){
     const error = new HttpError(
-      'Signing up failed, please try again.',
+      'Signing up failed, please try again.Token invalid.',
       500
     );
     return next(error);
   }
+  
 
   res.status(201).json({userId: createdUser.id, email:createdUser.email, token: token})
 };
@@ -129,7 +134,7 @@ const login = async (req, res, next) => {
   
   let token;
   try{
-    token = jwt.sign({userId: existingUser.id, email: existingUser.email}, process.env.JWT_kEY,{expiresIn:'1h'});
+    token = jwt.sign({userId: existingUser.id, email: existingUser.email}, process.env.JWT_KEY,{expiresIn:'1h'});
   }catch(err){
     const error = new HttpError(
       'Log in failed, please try again.',
