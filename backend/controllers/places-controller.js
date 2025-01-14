@@ -2,7 +2,7 @@ const fs = require('fs');
 
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
-
+const cloudinary = require('../util/cloudinary'); 
 const HttpError = require('../models/http-error');
 const getCoordsForAddress = require('../util/location');
 const Place = require('../models/place');
@@ -217,9 +217,15 @@ const deletePlace = async (req, res, next) => {
     return next(error);
   }
 
-  fs.unlink(imagePath, err => {
-    console.log(err);
-  });
+  const publicId = imagePath.split('/').slice(-1)[0].split('.')[0];
+
+  cloudinary.uploader.destroy(publicId, (err, result) => {
+    if (err) {
+        console.error('Failed to delete image from Cloudinary:', err);
+    } else {
+        console.log('Image deleted from Cloudinary:', result);
+    }
+});
 
   res.status(200).json({ message: 'Deleted place.' });
 };

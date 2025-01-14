@@ -2,8 +2,7 @@ const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const path = require('path');
-const cloudinary = require('cloudinary').v2;
+const cloudinary = require('./util/cloudinary');
 
 const placesRoutes = require('./routes/places-routes');
 const usersRoutes = require('./routes/users-routes');
@@ -13,7 +12,6 @@ const app = express();
 
 app.use(bodyParser.json());
 
-app.use('/uploads/images', express.static(path.join('uploads','images')))
 
 //Handling potential CORS errors
 app.use((req,res,next) => {
@@ -38,12 +36,19 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
-  if(req.file){
-    fs.unlink(req.file.path, (err) => {
-      console.log(err);
-    });
-  }
+  if (req.file && req.file.path) {
+      
+      const publicId = req.file.path.split('/').slice(-1)[0].split('.')[0];
 
+      cloudinary.uploader.destroy(publicId, (err, result) => {
+          if (err) {
+              console.error('Failed to delete file from Cloudinary:', err);
+          } else {
+              console.log('File deleted from Cloudinary:', result);
+          }
+      });
+  }
+  
   if (res.headerSent) {
     return next(error);
   }
