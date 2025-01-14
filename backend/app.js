@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
+const cloudinary = require('cloudinary').v2;
 
 const placesRoutes = require('./routes/places-routes');
 const usersRoutes = require('./routes/users-routes');
@@ -60,5 +61,4 @@ mongoose
     .catch(err => {
         console.log(err)
     })
-
 
